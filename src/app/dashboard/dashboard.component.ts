@@ -9,12 +9,32 @@ import { GeminiService } from '../gemini.service';
 export class DashboardComponent {
 
   prompt:string = '';
-  geminiSvc:GeminiService = inject(GeminiService);
-  constructor() { }
+  chatHistory:any[] = [];
+  loading:boolean = false;
 
-  GetResponse(){
+  geminiSvc:GeminiService = inject(GeminiService);
+  constructor() { 
+    this.geminiSvc.getMessageHistory().subscribe((data)=>{
+      if (data) {
+        this.chatHistory.push(data);
+      }
+    })
+  }
+
+  async GetResponse(){
     if (this.prompt) {
-       this.geminiSvc.generateText(this.prompt);
+      this.loading = true;
+      const data = this.prompt;
+      this.prompt = '';
+      await this.geminiSvc.generateText(data);
+      this.loading = false;
     }
   }
+
+  FormatResponse(response: string): string {
+    const result = response.replaceAll('**',' '); 
+    return result; 
+  }
+
+
 }
