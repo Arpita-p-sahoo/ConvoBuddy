@@ -23,7 +23,6 @@ export class GeminiService {
     const res = await model.generateContent(prompt);
     const response = await res.response;
     const text = response.text();
-    console.log(text);
     this.messageHistory.next({
       from:'bot',
       message:text
