@@ -6,10 +6,29 @@
     <!-- Chat Messages Container -->
     <div class="flex-grow overflow-auto px-4 py-6 space-y-2" [style.height.px]="chatContainerHeight" #chatContainer>
         <!-- Chat Messages -->
+        <div class="flex items-center justify-center h-screen" *ngIf="chatHistory.length === 0">
+
+
+            <div class="flex-shrink-0 mr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48" color="#4a90e2"
+                    fill="none">
+                    <path
+                        d="M3 12C7.97056 12 12 7.97056 12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12Z"
+                        stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+                </svg>
+            </div>
+            <h1 class="text-center text-4xl">
+                Hey I am your ConvoBuddy.. How can I help you?
+            </h1>
+        </div>
+
         <div *ngFor="let chat of chatHistory" class="mb-4">
             <!-- Sender Message with bot icon -->
-            <div class="flex justify-end items-start" *ngIf="chat.from == 'user'">
-                <div class="max-w-3/4 bg-blue-500 text-white p-3 rounded-lg ml-auto">{{chat.message}}</div>
+            <div class="flex justify-end items-start" *ngIf="chat.from === 'user'">
+                <div
+                    class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg bg-green-600 text-white p-3 rounded-lg ml-auto">
+                    {{ chat.message }}
+                </div>
                 <div class="flex-shrink-0 ml-2">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000"
                         fill="none">
@@ -22,7 +41,7 @@
             </div>
 
             <!-- Bot's Message with bot icon -->
-            <div class="flex items-start" *ngIf="chat.from == 'bot'">
+            <div class="flex items-start" *ngIf="chat.from === 'bot'">
                 <div class="flex-shrink-0 mr-2">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#4a90e2"
                         fill="none">
@@ -31,12 +50,13 @@
                             stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
                     </svg>
                 </div>
-                <div class="max-w-3/4 bg-gray-300 text-gray-700 p-3 rounded-lg">{{chat.message}}</div>
+                <div class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg bg-gray-300 text-gray-700 p-3 rounded-lg"
+                    [innerHTML]="chat.message | formatText">
+                    {{ chat.message }}
+                </div>
             </div>
-            
-            <!-- More messages go here -->
-        
         </div>
+
         <div class="flex items-start" *ngIf="loading">
             <div class="flex-shrink-0 mr-2">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#4a90e2"
@@ -51,12 +71,36 @@
     </div>
 
 
+
     <!-- Chat Input -->
     <div class="bg-gray-200 px-4 py-3 flex items-center  w-full mt-4">
         <input #inputField (keyup.enter)="GetResponse()" [(ngModel)]="prompt" type="text"
             placeholder="Type your message..."
             class="flex-grow px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
-        <button (click)="GetResponse()" type="submit"
-            class="bg-blue-500 text-white px-4 py-2 ml-2 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600">Send</button>
+
+        <button type="submit" (click)="GetResponse()" *ngIf="loading"
+            class="bg-gray-300 px-4 py-2 rounded-md cursor-not-allowed opacity-50" disabled>
+
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#ffffff"
+                fill="none">
+                <path
+                    d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z"
+                    stroke="currentColor" stroke-width="1.5" />
+                <path d="M17 14C17 14 13.3176 10 12 10C10.6824 9.99999 7 14 7 14" stroke="currentColor"
+                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+
+        </button>
+
+        <!-- HTML -->
+        <button *ngIf="!loading "
+            class="bg-green-600 hover:bg-green-800 active:bg-green-800 px-4 py-2 rounded-md text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#ffffff" fill="none">
+                <path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" stroke="currentColor" stroke-width="1.5" />
+                <path d="M17 14C17 14 13.3176 10 12 10C10.6824 9.99999 7 14 7 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </button>
     </div>
+
+
 </div>
