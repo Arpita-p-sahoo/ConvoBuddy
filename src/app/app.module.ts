@@ -6,12 +6,14 @@ import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { FormsModule } from '@angular/forms';
 import { FormatTextPipe } from './format-text.pipe';
+import { LoginPageComponent } from './login-page/login-page.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
-    FormatTextPipe
+    FormatTextPipe,
+    LoginPageComponent
   ],
   imports: [
     BrowserModule,
