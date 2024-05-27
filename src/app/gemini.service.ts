@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../environment.prod';
+import axios from 'axios';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -34,5 +36,16 @@ export class GeminiService {
     return this.messageHistory.asObservable();
   }
 
+  Connect = (username:any,password:any) =>{
+    return new Promise((resolve, reject) => {
+      try {
+        const res = axios.post('http://localhost:8288/register', 
+        {username:username,password:password});
+        resolve(res);
+      } catch (error) {
+        reject(error);
+      }
+    })
+  }
   
 }
