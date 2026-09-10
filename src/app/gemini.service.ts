@@ -15,7 +15,7 @@ export class GeminiService {
   }
   
   generateText = async (prompt:string) =>{
-    const model = this.generativeAI.getGenerativeModel({model:'gemini-pro'});
+    const model = this.generativeAI.getGenerativeModel({model:'gemini-3.6-flash'});
     this.messageHistory.next({
       from:'user',
       message:prompt
