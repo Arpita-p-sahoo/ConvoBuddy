@@ -1,93 +1,254 @@
-<div class="h-screen flex flex-col bg-gray-200">
-    <!-- Chat Header -->
-    <div class="bg-gray-200 px-4 py-3 border-b border-gray-300">
-        <h2 class="text-lg font-semibold text-gray-700">ConvoBuddy</h2>
-    </div>
-    <!-- Chat Messages Container -->
-    <div class="flex-grow overflow-auto px-4 py-6 space-y-2" [style.height.px]="chatContainerHeight" #chatContainer>
-        <!-- Chat Messages -->
-        <div class="flex items-center" *ngIf="chatHistory.length === 0">
-            <div class="flex-shrink-0 mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48" color="#4a90e2"
-                    fill="none">
-                    <path
-                        d="M3 12C7.97056 12 12 7.97056 12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12Z"
-                        stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
-                </svg>
-            </div>
-            <div class="text-center text-4xl">
-                Hey I am your ConvoBuddy.. How can I help you?
-            </div>
-        </div>
+<div class="flex h-[100dvh] w-full overflow-hidden bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
 
-        <div *ngFor="let chat of chatHistory" class="mb-4">
-            <!-- Sender Message with bot icon -->
-            <div class="flex justify-end items-start" *ngIf="chat.from === 'user'">
-                <div
-                    class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg bg-green-600 text-white p-3 rounded-lg ml-auto">
-                    {{ chat.message }}
-                </div>
-                <div class="flex-shrink-0 ml-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000"
-                        fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" />
-                        <path
-                            d="M7.5 17C9.8317 14.5578 14.1432 14.4428 16.5 17M14.4951 9.5C14.4951 10.8807 13.3742 12 11.9915 12C10.6089 12 9.48797 10.8807 9.48797 9.5C9.48797 8.11929 10.6089 7 11.9915 7C13.3742 7 14.4951 8.11929 14.4951 9.5Z"
-                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                    </svg>
-                </div>
-            </div>
+  <!-- Mobile sidebar backdrop -->
+  <div *ngIf="sidebarOpen" (click)="closeSidebar()"
+    class="fixed inset-0 z-30 bg-slate-950/50 backdrop-blur-sm lg:hidden"></div>
 
-            <!-- Bot's Message with bot icon -->
-            <div class="flex items-start" *ngIf="chat.from === 'bot'">
-                <div class="flex-shrink-0 mr-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#4a90e2"
-                        fill="none">
-                        <path
-                            d="M3 12C7.97056 12 12 7.97056 12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12Z"
-                            stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
-                    </svg>
-                </div>
-                <div class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg bg-gray-300 text-gray-700 p-3 rounded-lg"
-                    [innerHTML]="chat.message | formatText">
-                    {{ chat.message }}
-                </div>
-            </div>
-        </div>
+  <!-- Sidebar -->
+  <aside
+    class="fixed inset-y-0 left-0 z-40 flex w-72 flex-shrink-0 -translate-x-full transform flex-col border-r border-slate-200/80 bg-white transition-transform duration-300 ease-out dark:border-slate-800/80 dark:bg-slate-900 lg:static lg:translate-x-0"
+    [class.translate-x-0]="sidebarOpen">
 
-        <div class="flex items-start" *ngIf="loading">
-            <div class="flex-shrink-0 mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#4a90e2"
-                    fill="none">
-                    <path
-                        d="M3 12C7.97056 12 12 7.97056 12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12Z"
-                        stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
-                </svg>
-            </div>
-            <div class="loader"></div>
-        </div>
+    <div class="flex items-center gap-3 border-b border-slate-200/80 px-5 py-4 dark:border-slate-800/80">
+      <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-md shadow-indigo-500/20">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
+          <path d="M3 12C7.97056 12 12 7.97056 12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12Z"
+            stroke="white" stroke-width="1.5" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div class="min-w-0">
+        <h1 class="truncate text-base font-semibold text-slate-900 dark:text-white">ConvoBuddy</h1>
+        <p class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+          <span class="relative flex h-1.5 w-1.5">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+          </span>
+          <span>{{ loading ? 'Typing…' : 'Online' }}</span>
+        </p>
+      </div>
+      <button type="button" (click)="closeSidebar()" aria-label="Close menu"
+        class="ml-auto flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300 lg:hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+      </button>
     </div>
 
+    <div class="px-3 pt-4">
+      <button type="button" (click)="startNewChat()"
+        class="flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:border-indigo-300 hover:text-indigo-600 active:scale-[0.98] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-indigo-500 dark:hover:text-indigo-400">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+        New chat
+      </button>
+    </div>
 
+    <div class="mt-6 flex-1 overflow-y-auto px-3">
+      <p class="px-2 pb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Recent chats</p>
 
-    <!-- Chat Input -->
-    <div class="bg-gray-200 px-4 py-3 flex items-center  w-full mt-4">
-        <input #inputField (keyup.enter)="GetResponse()" [(ngModel)]="prompt" type="text"
-            placeholder="Type your message..."
-            class="flex-grow px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
+      <div *ngIf="chats.length === 0" class="px-2 py-6 text-center text-xs text-slate-400 dark:text-slate-500">
+        No conversations yet
+      </div>
 
-        <button type="submit" *ngIf="loading"
-            class="bg-gray-300 px-4 py-2 rounded-md cursor-not-allowed opacity-50" disabled>
-            Send
-
+      <div class="flex flex-col gap-1">
+        <button *ngFor="let chat of chats; trackBy: trackByChatId" type="button" (click)="selectChat(chat.id)"
+          class="group/item relative flex items-center gap-2 rounded-lg py-2 pl-2.5 pr-8 text-left text-sm transition"
+          [class]="chat.id === activeChatId
+            ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300'
+            : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 opacity-70">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          <span class="min-w-0 flex-1 truncate">{{ chat.title || 'New chat' }}</span>
+          <span (click)="deleteChat(chat.id, $event)" role="button" tabindex="0" aria-label="Delete chat"
+            class="absolute right-1.5 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-md text-slate-400 opacity-0 transition hover:bg-slate-200 hover:text-red-500 focus:opacity-100 group-hover/item:opacity-100 dark:hover:bg-slate-700">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16z" />
+            </svg>
+          </span>
         </button>
-
-        <!-- HTML -->
-        <button *ngIf="!loading "  (click)="GetResponse()"
-            class="bg-green-600 hover:bg-green-800 active:bg-green-800 px-4 py-2 rounded-md text-white">
-            Send
-        </button>
+      </div>
     </div>
 
+    <div class="border-t border-slate-200/80 px-3 py-3 dark:border-slate-800/80">
+      <button type="button" (click)="toggleTheme()"
+        class="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2.5 text-sm text-slate-600 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
+        <svg *ngIf="!darkMode" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+        </svg>
+        <svg *ngIf="darkMode" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
+        </svg>
+        {{ darkMode ? 'Dark mode' : 'Light mode' }}
+      </button>
+    </div>
+  </aside>
 
+  <!-- Main -->
+  <div class="flex min-w-0 flex-1 flex-col">
+
+    <!-- Mobile / tablet header -->
+    <header class="sticky top-0 z-20 flex items-center gap-3 border-b border-slate-200/80 bg-white/80 px-3 py-3 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-900/80 lg:hidden">
+      <button type="button" (click)="toggleSidebar()" aria-label="Open menu"
+        class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-100 active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
+      </button>
+      <div class="min-w-0 flex-1">
+        <h1 class="truncate text-base font-semibold text-slate-900 dark:text-white">ConvoBuddy</h1>
+        <p class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+          <span class="relative flex h-1.5 w-1.5">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+          </span>
+          <span>{{ loading ? 'Typing…' : 'Online' }}</span>
+        </p>
+      </div>
+      <button type="button" (click)="toggleTheme()"
+        class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-100 active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+        [attr.aria-label]="darkMode ? 'Switch to light mode' : 'Switch to dark mode'">
+        <svg *ngIf="!darkMode" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+        </svg>
+        <svg *ngIf="darkMode" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
+        </svg>
+      </button>
+    </header>
+
+    <!-- Chat Messages -->
+    <div #chatContainer (click)="onChatAreaClick($event)" class="chat-scroll min-h-0 flex-1 overflow-y-auto scroll-smooth">
+      <div class="mx-auto flex min-h-full w-full max-w-3xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8 lg:py-8 xl:max-w-4xl">
+
+        <!-- Empty state -->
+        <div *ngIf="chatHistory.length === 0 && !loading"
+          class="flex flex-1 flex-col items-center justify-center gap-6 py-10 text-center">
+          <div class="relative flex h-16 w-16 animate-pop-in items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/30 lg:h-20 lg:w-20">
+            <span class="absolute -inset-2 -z-10 animate-ping rounded-3xl bg-indigo-400/20"></span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30" fill="none">
+              <path d="M3 12C7.97056 12 12 7.97056 12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12Z"
+                stroke="white" stroke-width="1.5" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <div class="animate-fade-in-up space-y-1.5">
+            <h2 class="text-xl font-semibold text-slate-900 dark:text-white sm:text-2xl lg:text-3xl">Hey, I'm ConvoBuddy</h2>
+            <p class="mx-auto max-w-sm text-sm text-slate-500 dark:text-slate-400 sm:text-base lg:max-w-md lg:text-lg">
+              Ask me anything — code, ideas, explanations, and more.
+            </p>
+          </div>
+          <div class="grid w-full max-w-md animate-fade-in-up grid-cols-1 gap-2 sm:grid-cols-2 lg:max-w-lg">
+            <button *ngFor="let suggestion of suggestions" type="button" (click)="useSuggestion(suggestion)"
+              class="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-left text-xs text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-300 hover:text-indigo-600 hover:shadow-md active:translate-y-0 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-indigo-500 dark:hover:text-indigo-400 sm:text-sm">
+              {{ suggestion }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div *ngFor="let chat of chatHistory; let i = index; trackBy: trackByIndex"
+          class="group flex w-full animate-fade-in-up" [class.justify-end]="chat.from === 'user'">
+
+          <!-- Bot message -->
+          <div *ngIf="chat.from === 'bot'" class="flex w-full max-w-[92%] items-start gap-2.5 sm:max-w-[85%]">
+            <div class="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none">
+                <path d="M3 12C7.97056 12 12 7.97056 12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12Z"
+                  stroke="white" stroke-width="1.5" stroke-linejoin="round" />
+              </svg>
+            </div>
+            <div class="min-w-0 flex-1">
+              <div
+                class="chat-prose rounded-2xl rounded-tl-sm border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed text-slate-800 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 sm:text-[15px]"
+                [innerHTML]="chat.message | formatText"></div>
+              <div class="mt-1 flex items-center gap-3 px-1">
+                <span class="text-[11px] text-slate-400 dark:text-slate-500">{{ chat.time | date:'shortTime' }}</span>
+                <button type="button" (click)="copyMessage(chat.message, i)"
+                  class="flex items-center gap-1 text-[11px] text-slate-400 opacity-0 transition hover:text-indigo-500 focus:opacity-100 group-hover:opacity-100 dark:text-slate-500 dark:hover:text-indigo-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  </svg>
+                  {{ copiedMessageIndex === i ? 'Copied!' : 'Copy' }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- User message -->
+          <div *ngIf="chat.from === 'user'" class="flex w-full max-w-[92%] items-start justify-end gap-2.5 sm:max-w-[85%]">
+            <div class="flex min-w-0 flex-1 flex-col items-end">
+              <div
+                class="whitespace-pre-wrap break-words rounded-2xl rounded-tr-sm bg-gradient-to-br from-indigo-500 to-violet-600 px-4 py-3 text-sm leading-relaxed text-white shadow-sm shadow-indigo-500/20 sm:text-[15px]">{{ chat.message }}</div>
+              <div class="mt-1 flex items-center gap-3 px-1">
+                <button type="button" (click)="copyMessage(chat.message, i)"
+                  class="flex items-center gap-1 text-[11px] text-slate-400 opacity-0 transition hover:text-indigo-500 focus:opacity-100 group-hover:opacity-100 dark:text-slate-500 dark:hover:text-indigo-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  </svg>
+                  {{ copiedMessageIndex === i ? 'Copied!' : 'Copy' }}
+                </button>
+                <span class="text-[11px] text-slate-400 dark:text-slate-500">{{ chat.time | date:'shortTime' }}</span>
+              </div>
+            </div>
+            <div class="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-slate-700 text-white shadow-sm dark:bg-slate-600">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" />
+                <path d="M7.5 17C9.8317 14.5578 14.1432 14.4428 16.5 17M14.4951 9.5C14.4951 10.8807 13.3742 12 11.9915 12C10.6089 12 9.48797 10.8807 9.48797 9.5C9.48797 8.11929 10.6089 7 11.9915 7C13.3742 7 14.4951 8.11929 14.4951 9.5Z"
+                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Typing indicator -->
+        <div *ngIf="loading" class="flex w-full max-w-[92%] animate-fade-in-up items-start gap-2.5 sm:max-w-[85%]">
+          <div class="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none">
+              <path d="M3 12C7.97056 12 12 7.97056 12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12Z"
+                stroke="white" stroke-width="1.5" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <div class="flex items-center gap-1.5 rounded-2xl rounded-tl-sm border border-slate-200 bg-white px-4 py-3.5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="border-t border-slate-200/80 bg-white/80 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-900/80">
+      <div class="mx-auto w-full max-w-3xl px-4 py-3 sm:px-6 sm:py-4 lg:px-8 xl:max-w-4xl">
+        <div
+          class="flex items-end gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-1.5 shadow-sm transition focus-within:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:focus-within:ring-indigo-500/20">
+          <textarea #inputField rows="1" [(ngModel)]="prompt" (keydown)="onInputKeydown($event)"
+            (input)="autoResize(inputField)" placeholder="Message ConvoBuddy..."
+            class="max-h-40 flex-1 resize-none bg-transparent px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none dark:text-white sm:text-[15px]"></textarea>
+
+          <button type="button" (click)="GetResponse()" [disabled]="loading || !prompt.trim()"
+            class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-sm transition enabled:hover:brightness-110 enabled:active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+            aria-label="Send message">
+            <svg *ngIf="!loading" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 2 11 13" />
+              <path d="M22 2 15 22l-4-9-9-4 20-7Z" />
+            </svg>
+            <svg *ngIf="loading" class="animate-spin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none">
+              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.5" opacity="0.25" />
+              <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+        <p class="mt-1.5 hidden text-center text-[11px] text-slate-400 dark:text-slate-500 sm:block">
+          Press <kbd class="rounded border border-slate-300 px-1 py-0.5 font-sans dark:border-slate-600">Enter</kbd> to send ·
+          <kbd class="rounded border border-slate-300 px-1 py-0.5 font-sans dark:border-slate-600">Shift + Enter</kbd> for a new line
+        </p>
+      </div>
+    </div>
+  </div>
 </div>
